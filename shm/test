@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#using -count = 1 to ban the  testing cached
+
+
+if [ -z "$1" ]
+then
+    echo -e "\033[31m Please input the method name which want to test for below: \033[0m"
+    read method
+    echo -e "\033[31m testing... \033[0m"
+	go test -v -run  $method -count=1 *.go
+else
+    echo -e "\033[31m testing... \033[0m"
+	go test -v -run  $1 -count=1 *.go
+fi
