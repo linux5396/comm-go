@@ -27,6 +27,7 @@ func Execute(commandLine string) ([]byte, error) {
 //if run fail, will return an err,  but impl is return a txt error
 //like a timeout err ,so there is a problem that how to know what's type of error
 //but i think ... whatever error is,it means the command exec fail. the result is what we focus on.
+//this func only support the
 func ExecuteWithTimeOut(commandLine string, timeout time.Duration) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -42,6 +43,11 @@ func ExecuteWithTimeOut(commandLine string, timeout time.Duration) ([]byte, erro
 		return nil, err //this error is not timeout err.
 	}
 	//for beyond problem I post the idea below:
+	//but ..because the timeout ctx without a way to get the timeout err,only by the blocked chan.
+	//and our application should run in a non-blocked way,so we only call the deadline  manually.
+	//this way exists a error:  There are nano scale errors.
+	//thus if you want without a mistake to judge time out or not.
+	//you should enhance the exec commandline,like get a file's locker or get a callback result.
 	if dl, _ := ctx.Deadline(); dl.Before(time.Now()) {
 		return nil, errors.New("time out err")
 	}
