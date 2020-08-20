@@ -6,6 +6,7 @@
 if [ -z "$1" ]
 then
     echo -e "\033[31m Please input the method name which want to test for below: \033[0m"
+    # shellcheck disable=SC2162
     read method
     echo -e "\033[31m testing... \033[0m"
 	go test -v -run  $method -count=1 *.go

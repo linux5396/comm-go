@@ -9,9 +9,19 @@ type ShareMemoryHolder struct {
 	ShmKey  int
 }
 
-func New(shmKey int) *ShareMemoryHolder {
+//a key range from 0 to 65535
+func New(shmKey uint16) *ShareMemoryHolder {
 	return &ShareMemoryHolder{
-		ShmKey: shmKey,
+		ShmKey: int(shmKey),
+	}
+}
+
+//new by transform func and a key of T.
+//f should return a uint which range is from 0 to 65535
+//so this func can be a hash func or
+func NewByFunc(key interface{}, f func(key interface{}) uint16) *ShareMemoryHolder {
+	return &ShareMemoryHolder{
+		ShmKey: int(f(key)),
 	}
 }
 
