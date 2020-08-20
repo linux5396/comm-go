@@ -2,14 +2,14 @@ package container
 
 //Set itf
 type Set interface {
+	//foreach is call f to process all elements in set.
+	Foreach
 	//put
 	Put(key interface{})
 	//Determine if it exists
 	Contains(key interface{}) bool
 	//Weed out
 	Evict(key interface{})
-	//foreach is call f to process all elements in set.
-	Foreach(f func(val interface{}))
 	//dump all elements from set
 	Dump() []interface{}
 	//set size
