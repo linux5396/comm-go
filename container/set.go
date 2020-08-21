@@ -73,10 +73,11 @@ func (h *HashSet) Evict(key interface{}) {
 }
 
 //foreach support to traverse all keys and execute f function
-func (h *HashSet) Foreach(f func(val interface{})) {
+func (h *HashSet) Foreach(f func(val interface{})) Foreach {
 	for k := range h.innerMap {
 		f(k)
 	}
+	return h
 }
 
 //Dump all keys
