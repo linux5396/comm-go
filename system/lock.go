@@ -19,7 +19,6 @@ func (fl *PoppyLock) TryLock(timeout time.Duration) bool {
 	//The current coroutine starts the timer, if the time is up, it will automatically exit
 	getLock := make(chan struct{}, 1)
 	timeoutLock := make(chan struct{}, 1)
-	promise := false
 	time.AfterFunc(timeout, func() {
 		timeoutLock <- struct{}{}
 	})
@@ -36,12 +35,11 @@ func (fl *PoppyLock) TryLock(timeout time.Duration) bool {
 		case <-timeoutLock:
 			fl.Unlock()
 		default:
-			//Realize double check, because even timeout, it may go here, so double check
-			//because of the polling mechanism of select
-			if promise {
-				fl.Unlock()
-				return
-			}
+			//FIXED 2-check Since select will give priority to other channels, if not, select default. Therefore, double check is not required
+			//if promise {
+			//	fl.Unlock()
+			//	return
+			//}
 			return
 		}
 	}()
@@ -50,7 +48,6 @@ func (fl *PoppyLock) TryLock(timeout time.Duration) bool {
 		//if get lock, the caller know should release.
 		return true
 	case <-timeoutLock:
-		promise = true
 		//add empty to notify that apply locker routine should release the lock
 		timeoutLock <- struct{}{}
 		return false
