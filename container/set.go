@@ -53,15 +53,6 @@ func NewHashSetByHashMap(replicas map[interface{}]interface{}) *HashSet {
 	}
 }
 
-func NewHashSetBySlice(slice []interface{}) *HashSet {
-	set := NewHashSet(len(slice))
-	//If inline optimization is enabled, the go compiler will automatically inline，no need to care about put call loss
-	for _, v := range slice {
-		set.Put(v)
-	}
-	return set
-}
-
 func (h *HashSet) Put(key interface{}) {
 	h.innerMap[key] = 1
 	h.size++
