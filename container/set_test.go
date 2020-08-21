@@ -2,6 +2,7 @@ package container
 
 import (
 	"fmt"
+	"log"
 	"testing"
 )
 
@@ -23,4 +24,7 @@ func TestNewHashSet(t *testing.T) {
 	}
 	set.Evict(12)
 	t.Log(set.Contains(12)) //false
+	set.Foreach(func(val interface{}) {
+		log.Println("----", val)
+	})
 }

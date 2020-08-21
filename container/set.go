@@ -53,15 +53,6 @@ func NewHashSetByHashMap(replicas map[interface{}]interface{}) *HashSet {
 	}
 }
 
-func NewHashSetBySlice(slice []interface{}) *HashSet {
-	set := NewHashSet(len(slice))
-	//If inline optimization is enabled, the go compiler will automatically inline，no need to care about put call loss
-	for _, v := range slice {
-		set.Put(v)
-	}
-	return set
-}
-
 func (h *HashSet) Put(key interface{}) {
 	h.innerMap[key] = 1
 	h.size++
@@ -82,10 +73,11 @@ func (h *HashSet) Evict(key interface{}) {
 }
 
 //foreach support to traverse all keys and execute f function
-func (h *HashSet) Foreach(f func(val interface{})) {
+func (h *HashSet) Foreach(f func(val interface{})) Foreach {
 	for k := range h.innerMap {
 		f(k)
 	}
+	return h
 }
 
 //Dump all keys

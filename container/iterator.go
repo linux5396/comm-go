@@ -1,24 +1,37 @@
 package container
 
+import "reflect"
+
 //iterator interface
 type Foreach interface {
-	Foreach(f func(arg interface{}))
+	Foreach(f func(arg interface{})) Foreach
 }
 
-//provide a unified slicing iterator
+//slice iterator
+//support function style
 type SliceIterator struct {
-	slice []interface{}
+	ptr *reflect.Value
 }
 
-//call ways:
-//NewS..(slice).Foreach(f)
-func NewSliceIterator(slice []interface{}) SliceIterator {
-	return SliceIterator{slice: slice}
-}
-
-//impl
-func (s SliceIterator) Foreach(f func(arg interface{})) {
-	for _, v := range s.slice {
-		f(v)
+//create a new slice iterator
+//the parameter must be a slice otherwise panic
+func NewSliceIterator(data interface{}) *SliceIterator {
+	v := reflect.ValueOf(data)
+	if v.Kind() != reflect.Slice {
+		panic("data is not slice")
 	}
+	return &SliceIterator{ptr: &v}
+}
+
+//iterative interface
+func (it *SliceIterator) Foreach(f func(itf interface{})) Foreach {
+	if it.ptr.Len() > 0 {
+		if !it.ptr.Index(0).CanInterface() {
+			panic("this slice does not support interface")
+		}
+	}
+	for i := 0; i < it.ptr.Len(); i++ {
+		f(it.ptr.Index(i).Interface())
+	}
+	return it
 }
