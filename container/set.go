@@ -1,5 +1,7 @@
 package container
 
+import "sync"
+
 //Set itf
 type Set interface {
 	//foreach is call f to process all elements in set.
@@ -11,7 +13,7 @@ type Set interface {
 	//Weed out
 	Evict(key interface{})
 	//dump all elements from set
-	Dump() []interface{}
+	Values() []interface{}
 	//set size
 	Size() int
 	//set is empty or not
@@ -81,7 +83,7 @@ func (h *HashSet) Foreach(f func(val interface{})) Foreach {
 }
 
 //Dump all keys
-func (h *HashSet) Dump() []interface{} {
+func (h *HashSet) Values() []interface{} {
 	keySet := make([]interface{}, 0)
 	for k := range h.innerMap {
 		keySet = append(keySet, k)
@@ -120,4 +122,65 @@ func (h *HashSet) Union(set Set) []interface{} {
 		}
 	})
 	return res
+}
+
+//a concurrent safe hash set
+type SyncHashSet struct {
+	sync.Mutex
+	innerSet *HashSet
+}
+
+func NewSyncHashSet() *SyncHashSet {
+	syncSet := &SyncHashSet{
+		innerSet: MakeHashSet(),
+	}
+	return syncSet
+}
+
+func (set *SyncHashSet) Foreach(f func(arg interface{})) Foreach {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Foreach(f)
+}
+
+func (set *SyncHashSet) Put(key interface{}) {
+	set.Lock()
+	defer set.Unlock()
+	set.innerSet.Put(key)
+}
+
+func (set *SyncHashSet) Contains(key interface{}) bool {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Contains(key)
+}
+
+func (set *SyncHashSet) Evict(key interface{}) {
+	set.Lock()
+	defer set.Unlock()
+	set.innerSet.Evict(key)
+}
+
+func (set *SyncHashSet) Values() []interface{} {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Values()
+}
+
+func (set *SyncHashSet) Size() int {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Size()
+}
+
+func (set *SyncHashSet) Empty() bool {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Empty()
+}
+
+func (set *SyncHashSet) Union(s Set) []interface{} {
+	set.Lock()
+	defer set.Unlock()
+	return set.innerSet.Union(s)
 }

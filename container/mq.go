@@ -19,16 +19,6 @@ func NewDequeue() *Dequeue {
 	return &Dequeue{l}
 }
 
-//support init by a slice
-func NewDequeueInCollection(vals []interface{}) *Dequeue {
-	l := list.New()
-	l.Init()
-	for _, v := range vals {
-		l.PushBack(v)
-	}
-	return &Dequeue{l}
-}
-
 func (d *Dequeue) PushBack(val interface{}) {
 	d.l.PushBack(val)
 }
