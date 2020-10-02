@@ -24,10 +24,11 @@ func NewPoppyLock(LockFunc func(), UnlockFunc func()) *PoppyLock {
 	pl := new(PoppyLock)
 	if LockFunc == nil || UnlockFunc == nil {
 		pl.both = false
+	} else {
+		pl.LockFunc = LockFunc
+		pl.UnlockFunc = UnlockFunc
+		pl.both = true
 	}
-	pl.LockFunc = LockFunc
-	pl.UnlockFunc = UnlockFunc
-	pl.both = true
 	return pl
 }
 
