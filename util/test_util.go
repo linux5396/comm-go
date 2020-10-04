@@ -206,6 +206,8 @@ func (t *Tester) Expect(actual interface{}, expect interface{}) bool {
 	return res
 }
 
+//serial obj to json string
+//if occurred error,will throws panic
 func (t *Tester) JsonSerialToString(obj interface{}) string {
 	if obj != nil {
 		jsonObj, err := json.MarshalIndent(obj, "", "\t")
@@ -221,8 +223,27 @@ func (t *Tester) JsonSerialToLog(obj interface{}) {
 	t.Logf("%v", t.JsonSerialToString(obj))
 }
 
+//compare after serialization
+//compare focus on data
+func (t *Tester) ExpectInJson(actual interface{}, expect interface{}) bool {
+	t.unitNo++
+	res := false
+	a, e := t.JsonSerialToString(actual), t.JsonSerialToString(expect)
+	if a == e {
+		t.Logf("%s", "pass")
+		res = true
+	} else {
+		t.Logf("expect is %v but actual is %v", a, e)
+		res = false
+	}
+	t.result[t.unitNo] = res
+	return res
+}
+
 //show all test cases
-func (t *Tester) TestCases() {
+//only support expectXX test methods
+//not for assert
+func (t *Tester) ShowTestCases() {
 	pass := 0
 	for k := range t.result {
 		if t.result[k] {
@@ -241,7 +262,91 @@ func (t *Tester) TestCases() {
 	t.Log("------end test result -------")
 }
 
-//TODO impl assert
-func Assert() {
+//itf
+func (t *Tester) Assert(actual interface{}, expect interface{}) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
 
+//assert int
+func (t *Tester) AssertInt(actual int, expect int) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+func (t *Tester) AssertInt8(actual int8, expect int8) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+func (t *Tester) AssertInt16(actual int16, expect int16) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+func (t *Tester) AssertInt32(actual int32, expect int32) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+func (t *Tester) AssertInt64(actual int64, expect int64) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+
+//float
+func (t *Tester) AssertFloat32(actual float32, expect float32) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+func (t *Tester) AssertFloat64(actual float64, expect float64) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+
+//string
+func (t *Tester) AssertString(actual string, expect string) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+
+//byte
+func (t *Tester) AssertByte(actual byte, expect byte) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
+}
+
+//rune
+func (t *Tester) AssertRune(actual rune, expect rune) {
+	if actual == expect {
+		t.Logf("%s", "pass")
+	} else {
+		t.Fatalf("expect is %v but actual is %v", expect, actual)
+	}
 }
